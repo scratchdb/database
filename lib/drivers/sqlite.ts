@@ -40,7 +40,9 @@ export class SQLite<Tables> extends Driver {
         this.connection = require('better-sqlite3')(connection.uri);
 
         // File doesn't exist or is empty
-        if (!fs.existsSync(connection.uri) || fs.statSync(connection.uri).size === 0) {
+        if (!fs.existsSync(connection.uri) || this.connection.prepare(`SELECT name FROM sqlite_master WHERE type='table';`).get() === undefined) {
+            this.log.warn('WARNING: Database appears empty; initializing it.');
+
             // Run initialisation function
             options.initialise(this.connection);
         }
