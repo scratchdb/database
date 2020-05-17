@@ -1,4 +1,4 @@
-import { Database as Connection } from 'better-sqlite3';
+import sqlite3 from 'better-sqlite3';
 import { v4 as uuid } from 'uuid';
 import mapObject from 'map-obj';
 import { Driver, DriverOptions } from './driver';
@@ -12,7 +12,7 @@ const isObject = (value: unknown): value is { [key: string]: { comparator: strin
 };
 
 export class SQLite<Tables> extends Driver {
-    connection: Connection;
+    connection: sqlite3.Database;
 
     constructor(options: Options) {
         super(options);

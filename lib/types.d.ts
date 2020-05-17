@@ -1,3 +1,5 @@
+import { SQLite, MySQL } from './drivers';
+
 export type DatabaseInsert<T> = Pick<T, Exclude<keyof T, 'id' | 'lastUpdated'>>;
 
 export interface Connection {
