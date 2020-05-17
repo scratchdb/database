@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.3](https://github.com/scratchdb/database/compare/v0.0.2...v0.0.3) (2020-05-17)
+
+
+### Bug Fixes
+
+* **types:** drivers not loading in correctly ([b3e5834](https://github.com/scratchdb/database/commit/b3e583402f3a396c2424d3ca7e5903ac9c495ea6))
+
 ### [0.0.2](https://github.com/scratchdb/database/compare/v0.0.1...v0.0.2) (2020-05-17)
 
 
