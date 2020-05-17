@@ -1,0 +1,53 @@
+{
+  "name": "@scratchdb/database",
+  "version": "0.0.1",
+  "description": "An easy to use database library",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "ava",
+    "build": "tsup index.ts --dts --bundle",
+    "prepare": "npm run build",
+    "release": "standard-version",
+    "commit": "git-cz"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [],
+  "author": "Alexis Tyler <xo@wvvw.me> (https://wvvw.me/)",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/better-sqlite3": "5.4.0",
+    "@types/node": "14.0.1",
+    "@types/uuid": "7.0.3",
+    "ava": "3.8.2",
+    "commitizen": "4.1.2",
+    "cz-conventional-changelog": "3.2.0",
+    "rollup-plugin-dts": "1.4.3",
+    "standard-version": "8.0.0",
+    "tempy": "0.5.0",
+    "ts-node": "8.10.1",
+    "tsup": "1.4.11",
+    "typescript": "3.9.2"
+  },
+  "dependencies": {
+    "map-obj": "4.1.0",
+    "uuid": "8.0.0"
+  },
+  "ava": {
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register/transpile-only"
+    ]
+  },
+  "optionalDependencies": {
+    "better-sqlite3": "7.0.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
