@@ -15,13 +15,6 @@ const arrayToHumanString = (array: string[], options?: ArrayToHumanStringOptions
     return [items.slice(0, -1).join(', '), items.slice(-1)[0]].join(items.length < 2 ? '' : ` ${options?.endingWord ?? 'and'} `);
 };
 
-interface Logger {
-    info(message?: any, ...optionalParams: any[]): void;
-    debug(message?: any, ...optionalParams: any[]): void;
-    warning(message?: any, ...optionalParams: any[]): void;
-    error(message?: any, ...optionalParams: any[]): void;
-}
-
 export function createDatabase<Tables>(driver: 'SQLite', options: DriverOptions): Drivers<Tables>['SQLite'];
 export function createDatabase<Tables>(driver: 'MySQL', options: DriverOptions): Drivers<Tables>['MySQL'];
 export function createDatabase<Tables>(driver: keyof Drivers<Tables>, options: DriverOptions) {

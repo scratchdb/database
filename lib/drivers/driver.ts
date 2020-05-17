@@ -4,16 +4,21 @@ interface Connection {
     uri: string
 };
 
+interface Logger {
+    info(message?: any, ...optionalParams: any[]): void;
+    debug(message?: any, ...optionalParams: any[]): void;
+    warning(message?: any, ...optionalParams: any[]): void;
+    error(message?: any, ...optionalParams: any[]): void;
+}
+
 export interface DriverOptions {
     log?: Logger | typeof console;
     initialise: (connection: any) => void;
     connections: Connection[]
 };
 
-type Logger = Console;
-
 export class Driver {
-    protected log: Logger;
+    protected log: Logger | typeof console;
 
     constructor(options: DriverOptions) {
         if (!options) {
