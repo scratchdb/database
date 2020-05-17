@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.5](https://github.com/scratchdb/database/compare/v0.0.4...v0.0.5) (2020-05-17)
+
+
+### Bug Fixes
+
+* change logger to use correct interface ([6e16b37](https://github.com/scratchdb/database/commit/6e16b37e3598afcedd4ebfa32396a415584f4588))
+
 ### [0.0.4](https://github.com/scratchdb/database/compare/v0.0.3...v0.0.4) (2020-05-17)
 
 
