@@ -1,7 +1,8 @@
 import { InvalidOptionsError } from './errors';
 import * as drivers from './drivers';
 import { SQLite, MySQL } from './drivers';
-import { Drivers, Connection } from './types';
+import { DriverOptions } from './drivers/driver';
+import { Drivers } from './types';
 
 interface ArrayToHumanStringOptions {
     endingWord?: string;
@@ -14,13 +15,16 @@ const arrayToHumanString = (array: string[], options?: ArrayToHumanStringOptions
     return [items.slice(0, -1).join(', '), items.slice(-1)[0]].join(items.length < 2 ? '' : ` ${options?.endingWord ?? 'and'} `);
 };
 
-interface Options {
-    connections: Connection[];
+interface Logger {
+    info(message?: any, ...optionalParams: any[]): void;
+    debug(message?: any, ...optionalParams: any[]): void;
+    warning(message?: any, ...optionalParams: any[]): void;
+    error(message?: any, ...optionalParams: any[]): void;
 }
 
-export function createDatabase<Tables>(driver: 'SQLite', options: Options): Drivers<Tables>['SQLite'];
-export function createDatabase<Tables>(driver: 'MySQL', options: Options): Drivers<Tables>['MySQL'];
-export function createDatabase<Tables>(driver: keyof Drivers<Tables>, options: Options) {
+export function createDatabase<Tables>(driver: 'SQLite', options: DriverOptions): Drivers<Tables>['SQLite'];
+export function createDatabase<Tables>(driver: 'MySQL', options: DriverOptions): Drivers<Tables>['MySQL'];
+export function createDatabase<Tables>(driver: keyof Drivers<Tables>, options: DriverOptions) {
     if (!options) {
         throw new InvalidOptionsError('"options" is required.');
     }

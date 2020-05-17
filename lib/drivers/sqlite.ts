@@ -1,20 +1,23 @@
-import sqlite3 from 'better-sqlite3';
+import fs from 'fs';
+import BetterSqlite3 from 'better-sqlite3';
 import { v4 as uuid } from 'uuid';
 import mapObject from 'map-obj';
 import { Driver, DriverOptions } from './driver';
 import { InvalidOptionsError } from '../errors';
 import { DatabaseInsert } from '../types';
 
-interface Options extends DriverOptions {}
+export interface SQLiteOptions extends DriverOptions {
+    initialise: (connection: BetterSqlite3.Database) => void;
+}
 
 const isObject = (value: unknown): value is { [key: string]: { comparator: string, value: any } } => {
     return typeof value === 'object' && typeof value !== null;
 };
 
 export class SQLite<Tables> extends Driver {
-    connection: sqlite3.Database;
+    connection: BetterSqlite3.Database;
 
-    constructor(options: Options) {
+    constructor(options: SQLiteOptions) {
         super(options);
 
         if (options.connections.length >= 2) {
@@ -28,7 +31,19 @@ export class SQLite<Tables> extends Driver {
             throw new InvalidOptionsError('"options.uri" is empty.');
         }
 
+        // Use custom logger
+        if (options.log) {
+            this.log = options.log;
+        }
+
+        // Setup connection
         this.connection = require('better-sqlite3')(connection.uri);
+
+        // File doesn't exist or is empty
+        if (!fs.existsSync(connection.uri) || fs.statSync(connection.uri).size === 0) {
+            // Run initialisation function
+            options.initialise(this.connection);
+        }
     }
 
     protected serialiseParams(params: {
@@ -75,7 +90,7 @@ export class SQLite<Tables> extends Driver {
         // return database.prepare(query).run(serialiseParams(params)) as T;
     }
 
-    async buildSelect<T extends keyof Tables>(table: T, fields?: string[], params: Partial<Tables[T]> = {}) {
+    protected async buildSelect<T extends keyof Tables>(table: T, fields?: string[], params: Partial<Tables[T]> = {}) {
         // Query
         const query = `SELECT ${fields ?? '*'} FROM ${table}`;
         const whereClauses = Object.entries(params).map(([key, param]) => {

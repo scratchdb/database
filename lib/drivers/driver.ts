@@ -1,11 +1,13 @@
 import { InvalidOptionsError } from '../errors';
 
-export interface DriverConnection {
+interface Connection {
     uri: string
 };
 
 export interface DriverOptions {
-    connections: DriverConnection[]
+    log?: Logger | typeof console;
+    initialise: (connection: any) => void;
+    connections: Connection[]
 };
 
 type Logger = Console;
