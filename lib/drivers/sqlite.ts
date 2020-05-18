@@ -14,7 +14,7 @@ const isObject = (value: unknown): value is { [key: string]: { comparator: strin
     return typeof value === 'object' && typeof value !== null;
 };
 
-export class SQLite<Tables> extends Driver {
+export class SQLite<SerialisedTables, Tables>extends Driver {
     connection: BetterSqlite3.Database;
 
     constructor(options: SQLiteOptions) {
@@ -65,14 +65,21 @@ export class SQLite<Tables> extends Driver {
         }));
     }
 
-    async insert<T extends keyof Tables>(table: T, params: DatabaseInsert<Tables[T]>): Promise<Tables[T]> {
+    buildParamsQuery(params: any) {
+        return Object.keys(params).map(param => `@${param}`);
+    }
+
+    /**
+     * Insert a document into the database.
+     */
+    async insert<T extends keyof Tables & keyof SerialisedTables>(table: T, params: DatabaseInsert<Partial<Tables[T]>>): Promise<SerialisedTables[T]> {
         // Query
         const queryParams = {
             id: uuid(),
             lastUpdated: new Date().toISOString(),
             ...params
         };
-        const sqlQuery = `INSERT INTO ${table} (${Object.keys(queryParams)}) VALUES (${Object.keys(queryParams).map(param => `@${param}`)})`;
+        const sqlQuery = `INSERT INTO ${table} (${Object.keys(queryParams).join(', ')}) VALUES (${this.buildParamsQuery(queryParams)})`;
         this.log.debug(`QUERY: ${sqlQuery}`);
 
         // Params
@@ -82,17 +89,20 @@ export class SQLite<Tables> extends Driver {
         // Result
         const result = this.connection.prepare(sqlQuery).run(sqlParams);
         this.log.debug(`RESULT: ${JSON.stringify(result)}`);
-        return queryParams as unknown as Tables[T];
+        return queryParams as unknown as SerialisedTables[T];
     }
 
-    async update<T extends keyof Tables>(table: T, id: string, params: DatabaseInsert<Tables[T]>): Promise<void> {
+    /**
+     * Update a document in the database.
+     */
+    async update<T extends keyof Tables>(table: T, query: Partial<Tables[T]>, params: DatabaseInsert<Tables[T]>): Promise<void> {
         // update Foo set Bar = 125
-        const query = `UPDATE ${table} set (${Object.keys(params).map(param => `${param} = @${param}`)})`;
+        const sqlQuery = `UPDATE ${table} set (${Object.keys(params).join(', ')}) WHERE ${this.buildParamsQuery(params)}`;
         this.log.debug(`QUERY: ${query}`);
         // return database.prepare(query).run(serialiseParams(params)) as T;
     }
 
-    protected async buildSelect<T extends keyof Tables>(table: T, fields?: string[], params: Partial<Tables[T]> = {}) {
+    protected async buildSelectQuery<T extends keyof Tables & keyof SerialisedTables>(table: T, fields?: string[], params: Partial<Tables[T]> = {}) {
         // Query
         const query = `SELECT ${fields ?? '*'} FROM ${table}`;
         const whereClauses = Object.entries(params).map(([key, param]) => {
@@ -116,22 +126,28 @@ export class SQLite<Tables> extends Driver {
         };
     }
 
-    async findOne<T extends keyof Tables>(table: T, fields?: string[], params?: Partial<Tables[T]>) {
-        const { sqlQuery, sqlParams } = await this.buildSelect(table, fields, params);
+    /**
+     * Find a document in the database.
+     */
+    async findOne<T extends keyof Tables & keyof SerialisedTables>(table: T, fields?: string[], params?: Partial<Tables[T]>) {
+        const { sqlQuery, sqlParams } = await this.buildSelectQuery(table, fields, params);
 
         // Result
         const result = this.connection.prepare(sqlQuery).get(sqlParams);
         this.log.debug(`RESULT: ${JSON.stringify(result)}`);
-        return result as Tables[T];
+        return result as SerialisedTables[T];
     };
 
-    async find<T extends keyof Tables>(table: T, fields?: string[], params?: Partial<Tables[T]>) {
-        const { sqlQuery, sqlParams } = await this.buildSelect(table, fields, params);
+    /**
+     * Find documents in the database.
+     */
+    async find<T extends keyof Tables & keyof SerialisedTables>(table: T, fields?: string[], params?: Partial<Tables[T]>) {
+        const { sqlQuery, sqlParams } = await this.buildSelectQuery(table, fields, params);
 
         // Results
         const results = this.connection.prepare(sqlQuery).all(sqlParams);
         this.log.debug(`RESULT: ${JSON.stringify(results)}`);
 
-        return results.map(result => mapObject(result, (key, value) => [String(key), value ?? undefined])) as Tables[T][];
+        return results.map(result => mapObject(result, (key, value) => [String(key), value ?? undefined])) as SerialisedTables[T][];
     };
 };

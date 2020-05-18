@@ -8,7 +8,7 @@ export interface Connection {
 
 export type Driver = 'SQLite' | 'MySQL';
 
-export interface Drivers<Tables> {
-    SQLite: SQLite<Tables>;
-    MySQL: MySQL<Tables>;
+export interface Drivers<SerialisedTables, Tables> {
+    SQLite: SQLite<SerialisedTables, Tables>;
+    MySQL: MySQL<SerialisedTables, Tables>;
 }

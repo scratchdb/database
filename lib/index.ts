@@ -15,9 +15,9 @@ const arrayToHumanString = (array: string[], options?: ArrayToHumanStringOptions
     return [items.slice(0, -1).join(', '), items.slice(-1)[0]].join(items.length < 2 ? '' : ` ${options?.endingWord ?? 'and'} `);
 };
 
-export function createDatabase<Tables>(driver: 'SQLite', options: DriverOptions): Drivers<Tables>['SQLite'];
-export function createDatabase<Tables>(driver: 'MySQL', options: DriverOptions): Drivers<Tables>['MySQL'];
-export function createDatabase<Tables>(driver: keyof Drivers<Tables>, options: DriverOptions) {
+export function createDatabase<SerialisedTables, Tables>(driver: 'SQLite', options: DriverOptions): Drivers<SerialisedTables, Tables>['SQLite'];
+export function createDatabase<SerialisedTables, Tables>(driver: 'MySQL', options: DriverOptions): Drivers<SerialisedTables, Tables>['MySQL'];
+export function createDatabase<SerialisedTables, Tables>(driver: keyof Drivers<SerialisedTables, Tables>, options: DriverOptions) {
     if (!options) {
         throw new InvalidOptionsError('"options" is required.');
     }
@@ -30,10 +30,10 @@ export function createDatabase<Tables>(driver: keyof Drivers<Tables>, options: D
     }
 
     if (driver === 'SQLite') {
-        return new SQLite<Tables>(options);
+        return new SQLite<SerialisedTables, Tables>(options);
     }
 
     if (driver === 'MySQL') {
-        return new MySQL<Tables>(options);
+        return new MySQL<SerialisedTables, Tables>(options);
     }
 }
