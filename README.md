@@ -78,4 +78,3 @@ An easy to use database library.
     //     password: null
     // }]
     ```
-```
