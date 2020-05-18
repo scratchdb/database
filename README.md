@@ -1,4 +1,5 @@
 # Database
+An easy to use database library.
 
 ## Usage
 

@@ -2,7 +2,7 @@
   "name": "@scratchdb/database",
   "private": false,
   "version": "0.0.7",
-  "description": "An easy to use database library",
+  "description": "An easy to use database library.",
   "main": "dist/index.js",
   "scripts": {
     "test": "ava",
