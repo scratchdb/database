@@ -7,7 +7,7 @@ import { InvalidOptionsError } from '../errors';
 import { DatabaseInsert } from '../types';
 
 export interface SQLiteOptions extends DriverOptions {
-    initialise: (connection: BetterSqlite3.Database) => void;
+    initialise?: (connection: BetterSqlite3.Database) => void;
 }
 
 const isObject = (value: unknown): value is { [key: string]: { comparator: string, value: any } } => {
@@ -44,7 +44,9 @@ export class SQLite<SerialisedTables, Tables>extends Driver {
             this.log.warn('WARNING: Database appears empty; initializing it.');
 
             // Run initialisation function
-            options.initialise(this.connection);
+            if (options.initialise) {
+                options.initialise(this.connection);
+            }
         }
     }
 

@@ -1,6 +1,6 @@
 import test from 'ava';
 import tempy from 'tempy';
-import { createDatabase } from '..';
+import { createDatabase } from '../index';
 import { InvalidOptionsError } from '../lib/errors';
 
 test('invalid options', t => {
@@ -84,15 +84,19 @@ test('accepts types', t => {
     }
 
     // Database
-    type Tables = {
+    interface Tables {
         episodes: Episode;
-    };
+    }
+
+    interface SerialisedTables {
+        episodes: Episode;
+    }
 
     t.notThrows(() => {
-        const database = createDatabase<Tables>('SQLite', {
+        const database = createDatabase<SerialisedTables, Tables>('SQLite', {
             connections: [{
                 uri: tempy.file()
             }]
         });
     });
-})
+});
