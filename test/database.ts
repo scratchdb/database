@@ -55,42 +55,24 @@ test('valid options', t => {
 
 test('accepts types', t => {
     type Row = {
-        /**
-         * The unique ID.
-         */
         id: string;
     }
 
     interface Episode extends Row {
-        showId: string;
-        /**
-         * Where this episode can be found.
-         */
-        location: string;
-        /**
-         * Which episode this is.
-         */
-        episodeNumber: number;
-        /**
-         * Which season this episode is in.
-         * Season "0" is used for specials in "western" mode.
-         */
-        seasonNumber: number;
-        videoCodec: string;
-        videoContainer: string;
-        releaseGroup: string;
-        mimeType: string;
-        format: string;
+        paused: boolean;
     }
 
-    // Database
     interface Tables {
         episodes: Episode;
     }
 
+    type ExtendPrototype<Prototype, NewFields> = NewFields & Omit<Prototype, keyof NewFields>;
+
     interface SerialisedTables {
-        episodes: Episode;
-    }
+        episodes: ExtendPrototype<Episode, {
+            paused: number;
+        }>;
+    };
 
     t.notThrows(() => {
         const database = createDatabase<SerialisedTables, Tables>('SQLite', {
